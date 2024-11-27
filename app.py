@@ -4,13 +4,16 @@ import pytz
 import requests
 import json
 import os
+from dotenv import load_dotenv
 
+# Initialize Flask app and load environment variables
 app = Flask(__name__)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+load_dotenv()  # This loads the environment variables from the .env file
 
-# API keys (replace with your actual API keys)
-WEATHER_API_KEY = 'dac6cbbf1bca7bbae0e94533effeaafa'
-NEWS_API_KEY = '053a3b3c60bc48afbecc8dd9c5d8c040'
+# Load API keys from environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+WEATHER_API_KEY = os.getenv("dac6cbbf1bca7bbae0e94533effeaafa")
+NEWS_API_KEY = os.getenv("053a3b3c60bc48afbecc8dd9c5d8c040")
 
 # Load the timezones data from the external JSON file
 def load_timezones():
@@ -74,7 +77,7 @@ def get_weather(location):
         temp = weather_data['main']['temp']
         return f"The current weather in {location} is {description} with a temperature of {temp}°C."
     except Exception as e:
-        return None
+        return f"Error fetching weather data: {e}"
 
 # Function to get the latest news
 def get_news():
@@ -87,7 +90,7 @@ def get_news():
         news_list = [f"{article['title']} - {article['source']['name']}" for article in articles]
         return "Here are the top news of the day:\n" + "\n".join(news_list)
     except Exception as e:
-        return None
+        return f"Error fetching news data: {e}"
 
 if __name__ == '__main__':
     app.run(debug=True)
