@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import requests
+from datetime import datetime  # Importing datetime
 
 app = Flask(__name__)
 
@@ -38,12 +39,12 @@ def get_weather(location):
         description = weather_data['weather'][0]['description']
         temp = weather_data['main']['temp']
         return f"The current weather in {location} is {description} with a temperature of {temp}°C."
-    except Exception as e:
-        return None
+    except requests.exceptions.RequestException as e:
+        return f"Error fetching weather data: {e}"
+
 def get_current_time():
     now = datetime.now()
     return now.strftime("The current time is %H:%M:%S.")
-
 
 def get_news():
     url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}"
@@ -54,8 +55,8 @@ def get_news():
         articles = news_data['articles'][:5]
         news_list = [f"{article['title']} - {article['source']['name']}" for article in articles]
         return "Here are the top 5 news headlines:\n" + "\n".join(news_list)
-    except Exception as e:
-        return None
+    except requests.exceptions.RequestException as e:
+        return f"Error fetching news: {e}"
 
 if __name__ == '__main__':
     app.run(debug=True)
