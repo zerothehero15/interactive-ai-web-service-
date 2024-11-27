@@ -25,12 +25,14 @@ def ask_openai():
     Handles user queries and returns AI-generated responses.
     Expects a JSON payload with a 'user_input' key.
     """
-    user_input = request.json.get('user_input')
-    
-    if not user_input:
-        return jsonify({'error': 'user_input is required'}), 400
-
     try:
+        # Extract user input from JSON payload
+        data = request.get_json()
+        user_input = data.get('user_input')
+
+        if not user_input:
+            return jsonify({'error': 'user_input is required'}), 400
+
         # Call OpenAI API
         response = openai.ChatCompletion.create(
             model="gpt-4",
@@ -38,6 +40,8 @@ def ask_openai():
                 {"role": "user", "content": user_input}
             ]
         )
+
+        # Extract the response content
         ai_response = response['choices'][0]['message']['content']
         return jsonify({'response': ai_response})
 
