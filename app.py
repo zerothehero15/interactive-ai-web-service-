@@ -83,7 +83,7 @@ def get_news():
             return None
         articles = news_data['articles'][:7]
         news_list = [f"{article['title']} - {article['source']['name']}" for article in articles]
-        return "Here are the top 5 news headlines:\n" + "\n".join(news_list)
+        return "Here are the top news of the day:\n" + "\n".join(news_list)
     except Exception as e:
         return None
 
