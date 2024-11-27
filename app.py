@@ -8,6 +8,20 @@ app = Flask(__name__)
 # API keys (replace with your actual API keys)
 WEATHER_API_KEY = 'dac6cbbf1bca7bbae0e94533effeaafa'
 NEWS_API_KEY = '053a3b3c60bc48afbecc8dd9c5d8c040'
+ 
+# Load the timezones data from the external JSON file
+
+def load_timezones():
+    try:
+        with open('timezones.json', 'r') as f:
+            timezones = json.load(f)
+        return timezones
+    except Exception as e:
+        print(f"Error loading timezones: {e}")
+        return {}
+
+# Load the timezones
+timezones = load_timezones()
 
 @app.route('/')
 def home():
