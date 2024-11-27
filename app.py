@@ -4,8 +4,8 @@ import requests
 app = Flask(__name__)
 
 # API keys (replace with your actual API keys)
-WEATHER_API_KEY = 'dac6cbbf1bca7bbae0e94533effeaafa'
-NEWS_API_KEY = '053a3b3c60bc48afbecc8dd9c5d8c040'
+WEATHER_API_KEY = 'your_openweather_api_key'
+NEWS_API_KEY = 'your_newsapi_key'
 
 @app.route('/')
 def home():
