@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
+from datetime import datetime
+import pytz
 import requests
-from datetime import datetime  # Importing datetime
 
 app = Flask(__name__)
 
@@ -24,12 +25,14 @@ def respond():
         news = get_news()
         response = news if news else "Sorry, I couldn't fetch the latest news."
     elif "time" in user_input:
-        response = get_current_time()
+        city = user_input.split("time in")[-1].strip()
+        response = get_current_time(city)
     else:
         response = f"AI Response to: {user_input}"
 
     return jsonify({'response': response})
 
+# Function to get the current weather
 def get_weather(location):
     url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={WEATHER_API_KEY}&units=metric"
     try:
@@ -39,13 +42,36 @@ def get_weather(location):
         description = weather_data['weather'][0]['description']
         temp = weather_data['main']['temp']
         return f"The current weather in {location} is {description} with a temperature of {temp}°C."
-    except requests.exceptions.RequestException as e:
-        return f"Error fetching weather data: {e}"
+    except Exception as e:
+        return None
 
-def get_current_time():
-    now = datetime.now()
-    return now.strftime("The current time is %H:%M:%S.")
+# Function to get the current time based on user input city
+def get_current_time(city):
+    try:
+        # Attempt to find the timezone for the city
+        city_tz = pytz.timezone(get_timezone_from_city(city))
+        city_time = datetime.now(city_tz)
+        return city_time.strftime(f"The current time in {city} is %H:%M:%S.")
+    except pytz.UnknownTimeZoneError:
+        return f"Sorry, I couldn't find the time zone for {city}. Please try a valid city name."
 
+# Function to get timezone from city name
+def get_timezone_from_city(city):
+    timezones = {
+        "new york": "America/New_York",
+        "los angeles": "America/Los_Angeles",
+        "london": "Europe/London",
+        "paris": "Europe/Paris",
+        "tokyo": "Asia/Tokyo",
+        "sydney": "Australia/Sydney",
+        "mumbai": "Asia/Kolkata",
+        "cape town": "Africa/Johannesburg"
+        # Add more cities and their timezones as needed
+    }
+    
+    return timezones.get(city.lower(), None)
+
+# Function to get the latest news
 def get_news():
     url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}"
     try:
@@ -55,8 +81,8 @@ def get_news():
         articles = news_data['articles'][:5]
         news_list = [f"{article['title']} - {article['source']['name']}" for article in articles]
         return "Here are the top 5 news headlines:\n" + "\n".join(news_list)
-    except requests.exceptions.RequestException as e:
-        return f"Error fetching news: {e}"
+    except Exception as e:
+        return None
 
 if __name__ == '__main__':
     app.run(debug=True)
