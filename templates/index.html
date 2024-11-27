@@ -3,76 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your App</title>
+    <title>Ask OpenAI</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 30px auto;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
-    <h1>Chat with AI</h1>
-
-    <!-- User Input Field -->
-    <div class="user-input-container">
-        <input type="text" id="user-input" placeholder="Ask me anything...">
-        <button onclick="submitInput()">Submit</button>
-    </div>
-
-    <!-- Chat Responses -->
-    <div id="chat-box">
-        <!-- Chat responses will be displayed here -->
-    </div>
+    <h1>Ask OpenAI</h1>
+    <form id="openai-form">
+        <textarea id="user-input" placeholder="Enter your question here..."></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response"></div>
 
     <script>
-        function submitInput() {
-            var userInput = document.getElementById('user-input').value;
-            if (!userInput.trim()) {
-                return;  // Don't submit if input is empty
-            }
+        $(document).ready(function () {
+            $('#openai-form').on('submit', function (e) {
+                e.preventDefault();
 
-            console.log("User Input:", userInput);
-            
-            // Display the user's message in the chat
-            displayChatResponse(userInput, 'user');
+                const userInput = $('#user-input').val();
+                $('#response').html('<em>Loading...</em>');
 
-            // Send user input to Flask backend via POST request
-            fetch('/api/ask_openai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ user_input: userInput })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Response from OpenAI:", data.response);
-                displayChatResponse(data.response, 'ai');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('There was an error processing your request.');
+                $.ajax({
+                    url: '/api/ask_openai',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ user_input: userInput }),
+                    success: function (data) {
+                        $('#response').html('<strong>Response:</strong> ' + data.response);
+                    },
+                    error: function (xhr) {
+                        const errorMsg = xhr.responseJSON.error || 'An error occurred.';
+                        $('#response').html('<strong>Error:</strong> ' + errorMsg);
+                    }
+                });
             });
-
-            // Clear the input field
-            document.getElementById('user-input').value = '';
-        }
-
-        function displayChatResponse(response, sender) {
-            var chatBox = document.getElementById('chat-box');
-            var responseDiv = document.createElement('div');
-            responseDiv.classList.add('chat-message');
-            
-            if (sender === 'user') {
-                responseDiv.classList.add('user-message');
-            } else {
-                responseDiv.classList.add('ai-message');
-            }
-
-            responseDiv.textContent = response;
-            chatBox.appendChild(responseDiv);
-
-            // Scroll to the bottom of the chat box
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
+        });
     </script>
 </body>
 </html>
