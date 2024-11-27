@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your App</title>
     <style>
-        /* Ensure the iframe and surrounding elements are styled correctly */
         .embed-container {
             position: relative;
             width: 100%;
             height: 0;
-            padding-top: 56.2225%; /* This ratio maintains a 16:9 aspect ratio */
+            padding-top: 56.2225%;
             padding-bottom: 0;
             box-shadow: 0 2px 8px 0 rgba(63, 69, 81, 0.16);
             margin-top: 1.6em;
@@ -42,7 +41,6 @@
             font-weight: bold;
         }
 
-        /* Style for the user input field and button */
         .user-input-container {
             margin-top: 20px;
             text-align: center;
@@ -96,8 +94,25 @@
     <script>
         function submitInput() {
             var userInput = document.getElementById('user-input').value;
-            console.log("User Input:", userInput); // This is where you can send the input to the backend
-            // You can add an AJAX call here to send the input to the Flask backend for processing
+            console.log("User Input:", userInput);  // This logs the input to the console for debugging
+
+            // Send user input to the Flask server via an API request
+            fetch('/api/respond', {
+                method: 'POST',  // POST method
+                headers: {
+                    'Content-Type': 'application/json'  // Sending JSON data
+                },
+                body: JSON.stringify({ user_input: userInput })  // Sending user input as JSON
+            })
+            .then(response => response.json())  // Parse the JSON response from the server
+            .then(data => {
+                console.log("Response from server:", data.response);  // Log the server response
+                alert(data.response);  // Show server's response in an alert
+            })
+            .catch(error => {
+                console.error('Error:', error);  // Log any error
+                alert('There was an error processing your request.');
+            });
         }
     </script>
 </body>
