@@ -22,6 +22,8 @@ def respond():
     elif "news" in user_input:
         news = get_news()
         response = news if news else "Sorry, I couldn't fetch the latest news."
+    elif "time" in user_input:
+        response = get_current_time()
     else:
         response = f"AI Response to: {user_input}"
 
@@ -38,6 +40,10 @@ def get_weather(location):
         return f"The current weather in {location} is {description} with a temperature of {temp}°C."
     except Exception as e:
         return None
+def get_current_time():
+    now = datetime.now()
+    return now.strftime("The current time is %H:%M:%S.")
+
 
 def get_news():
     url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}"
