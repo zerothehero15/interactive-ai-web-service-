@@ -12,8 +12,8 @@ load_dotenv()  # This loads the environment variables from the .env file
 
 # Load API keys from environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-WEATHER_API_KEY = os.getenv("dac6cbbf1bca7bbae0e94533effeaafa")
-NEWS_API_KEY = os.getenv("053a3b3c60bc48afbecc8dd9c5d8c040")
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")  # Correctly load from the environment
+NEWS_API_KEY = os.getenv("NEWS_API_KEY")  # Correctly load from the environment
 
 # Load the timezones data from the external JSON file
 def load_timezones():
