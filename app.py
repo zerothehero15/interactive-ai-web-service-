@@ -2,15 +2,15 @@ from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 import pytz
 import requests
+import json
 
 app = Flask(__name__)
 
 # API keys (replace with your actual API keys)
 WEATHER_API_KEY = 'dac6cbbf1bca7bbae0e94533effeaafa'
-NEWS_API_KEY = '053a3b3c60bc48afbecc8dd9c5d8c040'
- 
-# Load the timezones data from the external JSON file
+NEWS_API_KEY = ' 053a3b3c60bc48afbecc8dd9c5d8c040'
 
+# Load the timezones data from the external JSON file
 def load_timezones():
     try:
         with open('timezones.json', 'r') as f:
@@ -62,28 +62,16 @@ def get_weather(location):
 # Function to get the current time based on user input city
 def get_current_time(city):
     try:
-        # Attempt to find the timezone for the city
-        city_tz = pytz.timezone(get_timezone_from_city(city))
-        city_time = datetime.now(city_tz)
-        return city_time.strftime(f"The current time in {city} is %H:%M:%S.")
+        # Look for the city in the loaded timezones data
+        timezone = timezones.get(city.lower())
+        if timezone:
+            city_tz = pytz.timezone(timezone)
+            city_time = datetime.now(city_tz)
+            return city_time.strftime(f"The current time in {city} is %H:%M:%S.")
+        else:
+            return f"Sorry, I couldn't find the time zone for {city}. Please try a valid city name."
     except pytz.UnknownTimeZoneError:
         return f"Sorry, I couldn't find the time zone for {city}. Please try a valid city name."
-
-# Function to get timezone from city name
-def get_timezone_from_city(city):
-    timezones = {
-        "new york": "America/New_York",
-        "los angeles": "America/Los_Angeles",
-        "london": "Europe/London",
-        "paris": "Europe/Paris",
-        "tokyo": "Asia/Tokyo",
-        "sydney": "Australia/Sydney",
-        "mumbai": "Asia/Kolkata",
-        "cape town": "Africa/Johannesburg"
-        # Add more cities and their timezones as needed
-    }
-    
-    return timezones.get(city.lower(), None)
 
 # Function to get the latest news
 def get_news():
