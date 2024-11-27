@@ -1,15 +1,11 @@
 from flask import Flask, render_template, request, jsonify
-import openai
-import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+import requests
 
 app = Flask(__name__)
 
-# Set OpenAI API key from environment variable
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# API keys (replace with your actual API keys)
+WEATHER_API_KEY = 'dac6cbbf1bca7bbae0e94533effeaafa'
+NEWS_API_KEY = '053a3b3c60bc48afbecc8dd9c5d8c040'
 
 @app.route('/')
 def home():
@@ -17,18 +13,43 @@ def home():
 
 @app.route('/api/respond', methods=['POST'])
 def respond():
-    user_input = request.json.get('user_input', '')
-    
+    user_input = request.json.get('user_input', '').lower()
+
+    if "weather" in user_input:
+        location = user_input.split("weather in")[-1].strip()
+        weather = get_weather(location)
+        response = weather if weather else f"Sorry, I couldn't find weather for {location}."
+    elif "news" in user_input:
+        news = get_news()
+        response = news if news else "Sorry, I couldn't fetch the latest news."
+    else:
+        response = f"AI Response to: {user_input}"
+
+    return jsonify({'response': response})
+
+def get_weather(location):
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={WEATHER_API_KEY}&units=metric"
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Use your preferred model
-            messages=[{"role": "user", "content": user_input}]
-        )
-        ai_response = response['choices'][0]['message']['content']
+        weather_data = requests.get(url).json()
+        if weather_data.get('cod') != 200:
+            return None
+        description = weather_data['weather'][0]['description']
+        temp = weather_data['main']['temp']
+        return f"The current weather in {location} is {description} with a temperature of {temp}°C."
     except Exception as e:
-        ai_response = f"Error: {str(e)}"
-    
-    return jsonify({'response': ai_response})
+        return None
+
+def get_news():
+    url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}"
+    try:
+        news_data = requests.get(url).json()
+        if news_data.get('status') != 'ok':
+            return None
+        articles = news_data['articles'][:5]
+        news_list = [f"{article['title']} - {article['source']['name']}" for article in articles]
+        return "Here are the top 5 news headlines:\n" + "\n".join(news_list)
+    except Exception as e:
+        return None
 
 if __name__ == '__main__':
     app.run(debug=True)
