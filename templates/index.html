@@ -41,10 +41,45 @@
             color: #007bff;
             font-weight: bold;
         }
+
+        /* Style for the user input field and button */
+        .user-input-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .user-input-container input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .user-input-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #007bff;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .user-input-container button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome to the App</h1>
+
+    <!-- User Input Field -->
+    <div class="user-input-container">
+        <input type="text" id="user-input" placeholder="Ask me anything (weather, news, time, etc.)">
+        <button onclick="submitInput()">Submit</button>
+    </div>
 
     <!-- Embed Canva Design -->
     <div class="embed-container">
@@ -58,5 +93,12 @@
         </a>
     </div>
 
+    <script>
+        function submitInput() {
+            var userInput = document.getElementById('user-input').value;
+            console.log("User Input:", userInput); // This is where you can send the input to the backend
+            // You can add an AJAX call here to send the input to the Flask backend for processing
+        }
+    </script>
 </body>
 </html>
