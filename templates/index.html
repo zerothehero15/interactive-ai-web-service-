@@ -5,114 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your App</title>
     <style>
-        .embed-container {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-top: 56.2225%;
-            padding-bottom: 0;
-            box-shadow: 0 2px 8px 0 rgba(63, 69, 81, 0.16);
-            margin-top: 1.6em;
-            margin-bottom: 0.9em;
-            overflow: hidden;
-            border-radius: 8px;
-            will-change: transform;
-        }
-
-        .embed-container iframe {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            border: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .design-link {
-            text-align: center;
-            margin-top: 1em;
-        }
-
-        .design-link a {
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-        }
-
-        .user-input-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .user-input-container input[type="text"] {
-            padding: 10px;
-            width: 70%;
-            font-size: 16px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .user-input-container button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #007bff;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-
-        .user-input-container button:hover {
-            background-color: #0056b3;
-        }
+        /* Add your CSS styles here */
     </style>
 </head>
 <body>
-    <h1>Welcome to the Amai</h1>
+    <h1>Chat with AI</h1>
 
     <!-- User Input Field -->
     <div class="user-input-container">
-        <input type="text" id="user-input" placeholder="Ask me anything (weather, news, time, etc.)">
+        <input type="text" id="user-input" placeholder="Ask me anything...">
         <button onclick="submitInput()">Submit</button>
     </div>
 
-    <!-- Embed Canva Design -->
-    <div class="embed-container">
-        <iframe loading="lazy" src="https://www.canva.com/design/DAGXpcl_A1Y/-BVjM26RDpfHEtOENiZXXg/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
-    </div>
-
-    <!-- Link to the Canva design -->
-    <div class="design-link">
-        <a href="https://www.canva.com/design/DAGXpcl_A1Y/-BVjM26RDpfHEtOENiZXXg/view?utm_content=DAGXpcl_A1Y&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener">
-            Design by Allen
-        </a>
+    <!-- Chat Responses -->
+    <div id="chat-box">
+        <!-- Chat responses will be displayed here -->
     </div>
 
     <script>
         function submitInput() {
             var userInput = document.getElementById('user-input').value;
-            console.log("User Input:", userInput);  // This logs the input to the console for debugging
+            console.log("User Input:", userInput);
 
-            // Send user input to the Flask server via an API request
+            // Send user input to Flask backend via POST request
             fetch('/api/respond', {
-                method: 'POST',  // POST method
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'  // Sending JSON data
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ user_input: userInput })  // Sending user input as JSON
+                body: JSON.stringify({ user_input: userInput })
             })
-            .then(response => response.json())  // Parse the JSON response from the server
+            .then(response => response.json())
             .then(data => {
-                console.log("Response from server:", data.response);  // Log the server response
-                alert(data.response);  // Show server's response in an alert
+                console.log("Response from server:", data.response);
+                displayChatResponse(data.response);
             })
             .catch(error => {
-                console.error('Error:', error);  // Log any error
+                console.error('Error:', error);
                 alert('There was an error processing your request.');
             });
+        }
+
+        function displayChatResponse(response) {
+            var chatBox = document.getElementById('chat-box');
+            var responseDiv = document.createElement('div');
+            responseDiv.textContent = response;
+            chatBox.appendChild(responseDiv);
         }
     </script>
 </body>
