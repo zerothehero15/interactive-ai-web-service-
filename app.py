@@ -3,8 +3,10 @@ from datetime import datetime
 import pytz
 import requests
 import json
+import os
 
 app = Flask(__name__)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # API keys (replace with your actual API keys)
 WEATHER_API_KEY = 'dac6cbbf1bca7bbae0e94533effeaafa'
