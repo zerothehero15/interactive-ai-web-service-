@@ -35,11 +35,9 @@ def ask_openai():
 
         # Call OpenAI API
         response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "user", "content": user_input}
-            ]
-        )
+    model="gpt-3.5-turbo",  # Switch to this if GPT-4 isn't available
+    messages=[{"role": "user", "content": user_input}]
+)
 
         # Extract the response content
         ai_response = response['choices'][0]['message']['content']
