@@ -3,28 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced AI Assistant</title>
-    <script>
-        async function sendInput() {
-            const userInput = document.getElementById('userInput').value;
-            const responseBox = document.getElementById('response');
+    <title>Advanced AI Chat</title>
+</head>
+<body>
+    <h1>Chat with AI</h1>
+    <input type="text" id="userInput" placeholder="Ask me something...">
+    <button onclick="sendMessage()">Send</button>
+    <div id="response"></div>
 
-            responseBox.textContent = "Loading...";
-            
-            const response = await fetch('/api/respond', {
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('userInput').value;
+            fetch('/api/respond', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_input: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = data.response;
             });
-            const data = await response.json();
-            responseBox.textContent = data.response;
         }
     </script>
-</head>
-<body>
-    <h1>Advanced AI Assistant</h1>
-    <input type="text" id="userInput" placeholder="Ask me anything...">
-    <button onclick="sendInput()">Send</button>
-    <p><strong>Response:</strong> <span id="response"></span></p>
 </body>
 </html>
